@@ -286,7 +286,7 @@ class DymoLabel(DymoLabelBase):
         self.pb.short_form_feed()
 
 
-class DymoTape(DymoLabel):
+class DymoTape(DymoLabelBase):
     def __init__(
         self,
         *,

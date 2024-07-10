@@ -1,13 +1,12 @@
 import socket
+from django.db import models
 from django.db.models.query import QuerySet
-from rest_framework.request import Request
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from plugin import InvenTreePlugin
-from plugin.base.label.mixins import LabelItemType
 from plugin.machine.machine_types import LabelPrinterBaseDriver, LabelPrinterMachine
-from label.models import LabelTemplate
+from report.models import LabelTemplate
 
 from .version import DYMO_PLUGIN_VERSION
 from .dymo import DymoLabel, RoleSelect, PrintDensity
@@ -94,7 +93,7 @@ class DymoLabelPrinterDriver(LabelPrinterBaseDriver):
 
         super().__init__(*args, **kwargs)
 
-    def print_labels(self, machine: LabelPrinterMachine, label: LabelTemplate, items: QuerySet[LabelItemType], request: Request, **kwargs):
+    def print_labels(self, machine: LabelPrinterMachine, label: LabelTemplate, items: QuerySet[models.Model], **kwargs):
         """Print labels using a Dymo label printer."""
         printing_options = kwargs.get('printing_options', {})
 
@@ -109,12 +108,16 @@ class DymoLabelPrinterDriver(LabelPrinterBaseDriver):
 
         for item in items:
             dpi = {"TEXT": 300, "GRAPHIC": 600}[dymo_label.mode]
-            png = self.render_to_png(label, item, request, dpi=dpi)
+            png = self.render_to_png(label, item, dpi=dpi)
 
             for _copies in range(printing_options.get('copies', 1)):
                 dymo_label.add_label(png)
 
         data = dymo_label.get_data()
+        self.send_data(machine, data)
+
+    def send_data(self, machine: LabelPrinterMachine, data: bytearray):
+        machine.set_status(LabelPrinterMachine.MACHINE_STATUS.UNKNOWN)
 
         ip_addr = machine.get_setting('SERVER', 'D')
         port = machine.get_setting('PORT', 'D')
@@ -125,4 +128,5 @@ class DymoLabelPrinterDriver(LabelPrinterBaseDriver):
             print_socket.send(data)
             print_socket.close()
         except Exception as e:
-            raise ConnectionError(f"Error connection to network printer: {e}")
+            machine.set_status(LabelPrinterMachine.MACHINE_STATUS.DISCONNECTED)
+            machine.handle_error(f"Error connecting to network printer: {e}")
