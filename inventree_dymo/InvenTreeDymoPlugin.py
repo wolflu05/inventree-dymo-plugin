@@ -18,7 +18,8 @@ class InvenTreeDymoPlugin(InvenTreePlugin):
     VERSION = DYMO_PLUGIN_VERSION
 
     # Machine driver registry is only available in InvenTree 0.14.0 and later
-    MIN_VERSION = "0.14.0"
+    # Machine driver interface was fixed with 0.16.0 to work inside of inventree workers
+    MIN_VERSION = "0.16.0"
 
     TITLE = "InvenTree Dymo Plugin"
     SLUG = "inventree-dymo-plugin"
