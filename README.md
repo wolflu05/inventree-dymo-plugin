@@ -1,6 +1,6 @@
 # inventree-dymo-plugin
 
-[![License: ](https://img.shields.io/badge/License-GPLv3-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: ](https://img.shields.io/badge/License-GPLv3-yellow.svg)](https://opensource.org/license/gpl-3-0)
 ![CI](https://github.com/wolflu05/inventree-dymo-plugin/actions/workflows/ci.yml/badge.svg)
 
 A label printer driver plugin for [InvenTree](https://inventree.org/), which provides support for Dymo Label Writer® printers.
