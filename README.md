@@ -23,7 +23,7 @@ The easiest way to set this up, is using cups and configure a RAW printer device
 ## Installation
 
 > [!IMPORTANT]
-> This plugin is only compatible with InvenTree>=0.16 because this uses the new label printer driver interface introduced with [inventree/InvenTree#4824](https://github.com/inventree/InvenTree/pull/4824) and was fixed with 0.16 to work inside of workers.
+> This plugin is only compatible with InvenTree>=0.18, for older versions use v1.0.0 of this plugin.
 
 Goto "Admin Center > Plugins > Install Plugin" and enter `inventree-dymo-plugin` as package name.
 
