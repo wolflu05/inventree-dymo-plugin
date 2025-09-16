@@ -4,7 +4,6 @@ from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from machine.machine_type import BaseDriver
 from plugin import InvenTreePlugin
 from plugin.mixins import MachineDriverMixin
 from plugin.machine.machine_types import LabelPrinterBaseDriver, LabelPrinterMachine
