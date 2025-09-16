@@ -4,7 +4,9 @@ from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from machine.machine_type import BaseDriver
 from plugin import InvenTreePlugin
+from plugin.mixins import MachineDriverMixin
 from plugin.machine.machine_types import LabelPrinterBaseDriver, LabelPrinterMachine
 from report.models import LabelTemplate
 
@@ -12,18 +14,23 @@ from .version import DYMO_PLUGIN_VERSION
 from .dymo import DymoLabel, RoleSelect, PrintDensity
 
 
-class InvenTreeDymoPlugin(InvenTreePlugin):
+class InvenTreeDymoPlugin(InvenTreePlugin, MachineDriverMixin):
     AUTHOR = "wolflu05"
     DESCRIPTION = "InvenTree Dymo plugin"
     VERSION = DYMO_PLUGIN_VERSION
 
     # Machine driver registry is only available in InvenTree 0.14.0 and later
     # Machine driver interface was fixed with 0.16.0 to work inside of inventree workers
-    MIN_VERSION = "0.16.0"
+    # Machine driver interface was changed with 0.18.0
+    MIN_VERSION = "0.18.0"
 
     TITLE = "InvenTree Dymo Plugin"
     SLUG = "inventree-dymo-plugin"
-    NAME = "InvenTreeDymoPlugin"
+    NAME = "InvenTree Dymo Plugin"
+
+    def get_machine_drivers(self):
+        """Register machine drivers."""
+        return [DymoLabelPrinterDriver]
 
 
 class DymoLabelPrinterDriver(LabelPrinterBaseDriver):
