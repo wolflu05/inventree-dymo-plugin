@@ -9,14 +9,14 @@ from plugin.mixins import MachineDriverMixin
 from plugin.machine.machine_types import LabelPrinterBaseDriver, LabelPrinterMachine
 from report.models import LabelTemplate
 
-from .version import DYMO_PLUGIN_VERSION
+from . import PLUGIN_VERSION
 from .dymo import DymoLabel, RoleSelect, PrintDensity
 
 
 class InvenTreeDymoPlugin(InvenTreePlugin, MachineDriverMixin):
     AUTHOR = "wolflu05"
     DESCRIPTION = "InvenTree Dymo plugin"
-    VERSION = DYMO_PLUGIN_VERSION
+    VERSION = PLUGIN_VERSION
 
     # Machine driver registry is only available in InvenTree 0.14.0 and later
     # Machine driver interface was fixed with 0.16.0 to work inside of inventree workers
