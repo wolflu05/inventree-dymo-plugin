@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import setuptools
+import importlib
+import os
 
-from inventree_dymo.version import DYMO_PLUGIN_VERSION
+module_path = os.path.join(os.path.dirname(__file__), "inventree_dymo", "__init__.py")
+spec = importlib.util.spec_from_file_location("inventree_dymo", module_path)
+inventree_dymo = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(inventree_dymo)
+
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
@@ -11,7 +17,7 @@ with open('README.md', encoding='utf-8') as f:
 setuptools.setup(
     name="inventree-dymo-plugin",
 
-    version=DYMO_PLUGIN_VERSION,
+    version=inventree_dymo.PLUGIN_VERSION,
 
     author="wolflu05",
 
