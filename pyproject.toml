@@ -15,7 +15,7 @@ authors = [
     { name = "wolflu05",email = "76838159+wolflu05@users.noreply.github.com" },
 ]
 readme = "README.md"
-license = "GPL3+"
+license = "GPL-3.0+"
 keywords = ["inventree", "plugin"]
 requires-python = ">=3.9"
 dependencies = [
