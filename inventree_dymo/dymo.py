@@ -11,7 +11,7 @@ class LabeledEnum(enum.IntEnum):
         obj._value_ = value
         obj.label = label
         return obj
-    
+
     def __str__(self):
         return self.label
 
@@ -56,47 +56,47 @@ class DymoProtocolBuilder:
 
     @staticmethod
     def _to_bytes(value: int):
-        return value.to_bytes(2, 'big', signed=True)
-    
+        return value.to_bytes(2, "big", signed=True)
+
     def raw(self, data: list[int]):
         self.data += bytearray(data)
 
     def set_dot_tab(self, tab: int):
         if tab != self.dot_tab:
             self.dot_tab = tab
-            self.raw([0x1b, ord("B"), tab])
+            self.raw([0x1B, ord("B"), tab])
 
     def set_bytes_per_line(self, count: int):
         if count != self.bytes_per_line:
             self.bytes_per_line = count
-            self.raw([0x1b, ord("D"), count])
-    
+            self.raw([0x1B, ord("D"), count])
+
     def set_label_length(self, length: int):
-        self.raw([0x1b, ord("L"), *self._to_bytes(length)])
+        self.raw([0x1B, ord("L"), *self._to_bytes(length)])
 
     def form_feed(self):
-        self.raw([0x1b, ord("E")])
+        self.raw([0x1B, ord("E")])
 
     def short_form_feed(self):
-        self.raw([0x1b, ord("G")])
+        self.raw([0x1B, ord("G")])
 
     def select_roll(self, role: RoleSelect):
-        self.raw([0x1b, ord("q"), role.value])
+        self.raw([0x1B, ord("q"), role.value])
 
     def get_printer_status(self):
-        self.raw([0x1b, ord("A")])
+        self.raw([0x1B, ord("A")])
 
     def reset_printer(self):
-        self.raw([0x1b, ord("@")])
+        self.raw([0x1B, ord("@")])
 
     def restore_default_settings(self):
-        self.raw([0x1b, ord("*")])
+        self.raw([0x1B, ord("*")])
 
     def skip_lines(self, count: int):
-        self.raw([0x1b, ord("f"), 0x1, count])
+        self.raw([0x1B, ord("f"), 0x1, count])
 
     def return_rev_letter_number(self):
-        self.raw([0x1b, ord("V")])
+        self.raw([0x1B, ord("V")])
 
     def transfer_data(self, data: bytes):
         self.raw([0x16, *data])
@@ -107,19 +107,19 @@ class DymoProtocolBuilder:
 
     def set_print_mode(self, mode: Literal["TEXT", "GRAPHIC"]):
         if mode == "TEXT":
-            self.raw([0x1b, ord("h")])
+            self.raw([0x1B, ord("h")])
         elif mode == "GRAPHIC":
-            self.raw([0x1b, ord("i")])
+            self.raw([0x1B, ord("i")])
 
     def set_print_density(self, density: PrintDensity):
-        self.raw([0x1b, density.value])
+        self.raw([0x1B, density.value])
 
     # Tape printer commands
     def set_tape_type(self, tape_type: TapeType):
-        self.raw([0x1b, ord("C"), tape_type.value])
+        self.raw([0x1B, ord("C"), tape_type.value])
 
     def cut_tape(self):
-        self.raw([0x1b, ord("E")])
+        self.raw([0x1B, ord("E")])
 
 
 class DymoLabelBase:
@@ -165,14 +165,14 @@ class DymoLabelBase:
             return
 
         byte_count = end_byte - start_byte + 1
-        data = line[start_byte:end_byte + 1]
+        data = line[start_byte : end_byte + 1]
 
         # compressed can later decide to use uncompressed data if compressed data will be larger
         use_uncompressed = not self.compressed
 
         if self.compressed:
             compressed = []
-            pixels = [int(i) for a in data for i in list('{0:0b}'.format(a).zfill(8))]
+            pixels = [int(i) for a in data for i in list("{0:0b}".format(a).zfill(8))]
             curr = pixels[0]
             start_idx = 0
             for i in range(len(pixels)):
@@ -198,13 +198,22 @@ class DymoLabelBase:
         png = png.rotate(90 + self.rotate, expand=1)
 
         if resize is not None:
-            png = png.resize((png.width // resize[0], png.height // resize[1]), Image.Resampling.LANCZOS)
+            png = png.resize(
+                (png.width // resize[0], png.height // resize[1]),
+                Image.Resampling.LANCZOS,
+            )
 
         width, height = png.size
-        data = png.convert('L').point(lambda x: 0 if x > self.threshold else 1, mode='1').tobytes()
+        data = (
+            png.convert("L")
+            .point(lambda x: 0 if x > self.threshold else 1, mode="1")
+            .tobytes()
+        )
         bytes_per_line = math.ceil(width / 8)
-        return [data[y * bytes_per_line:(y + 1) * bytes_per_line] for y in range(height)]
-    
+        return [
+            data[y * bytes_per_line : (y + 1) * bytes_per_line] for y in range(height)
+        ]
+
     # --- hooks ---
     def init_job(self):
         pass
@@ -221,7 +230,7 @@ class DymoLabel(DymoLabelBase):
         self,
         *,
         label_length: int = 3058,
-        mode: Literal["TEXT", "GRAPHIC"] = 'TEXT',
+        mode: Literal["TEXT", "GRAPHIC"] = "TEXT",
         density: PrintDensity = PrintDensity.NORMAL,
         role_select: RoleSelect = RoleSelect.AUTOMATIC,
         compressed: bool = None,
@@ -299,7 +308,7 @@ class DymoTape(DymoLabelBase):
         self.tape_size = tape_size
 
         super().__init__(compressed=False, rotate=rotate, threshold=threshold)
-    
+
     def init_job(self):
         self.pb.raw([0x01])
         self.pb.set_dot_tab(0)
