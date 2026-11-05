@@ -128,7 +128,7 @@ class DymoLabelPrinterDriver(LabelPrinterBaseDriver):
 
         for item in items:
             dpi = {"TEXT": 300, "GRAPHIC": 600}[dymo_label.mode]
-            png = self.render_to_png(label, item, dpi=dpi)
+            png = self.render_to_png(label, item, dpi=dpi, user=kwargs.get("user"))
 
             for _copies in range(printing_options.get("copies", 1)):
                 dymo_label.add_label(png)
